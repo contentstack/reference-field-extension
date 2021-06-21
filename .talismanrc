@@ -1,0 +1,7 @@
+fileignoreconfig:
+- filename: reference-field-popup/src/components/listLayout.js
+  checksum: 6acae0d785950c9e87d6da823b87a51a7029e19735ad4a2a6a6c3d814386a841
+- filename: reference-field/src/Home.js
+  checksum: dd930156deda6caf86309d892e137a82f779452b98839b91c3069b159406b8dd
+- filename: reference-field-popup/src/components/modal.js
+  checksum: 88e4eb2b1d611b9e0f62d8f6fc273ecd8e0c52bb73fd2214c49d527a93b9bb3b
