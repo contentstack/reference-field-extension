@@ -21,9 +21,33 @@ export class Home extends React.Component {
     this.isEmpty = this.isEmpty.bind(this);
   }
 
+  getProcessedEntry(ctUid, uid, entry) {
+    return new Promise((resolve) => {
+      this.extension.stack.ContentType(ctUid).Entry(uid)
+        .addParam('include_publish_details', 'true')
+        .fetch()
+        .then(async result => {
+          let newResult = Object.assign({}, result.entry, entry)
+          let nameEnv = [];
+          newResult.publish_details.map((newEntry) => {
+            this.state.envList.environments.filter((env) => {
+              if (env.uid === newEntry.environment) nameEnv.push(env.name);
+            });
+            return nameEnv;
+          });
+
+          newResult['publish_details'] = nameEnv;
+          resolve(newResult);
+        }).catch(err => {
+          console.log(err);
+        })
+    })
+  }
+
   componentDidMount() {
-    ContentstackUIExtension.init().then((extension) => {
+    ContentstackUIExtension.init().then(async (extension) => {
       let initialEntries = extension.field.getData();
+      this.extension = extension;
       extension.window.enableAutoResizing();
 
       extension.stack.getEnvironments('get').then((result) => {
@@ -36,12 +60,20 @@ export class Home extends React.Component {
       console.log('initialEntries', initialEntries, extension.field.schema.reference_to);
 
       if (initialEntries !== null && initialEntries !== undefined && !this.isEmpty(initialEntries)) {
+        let processedEntries = [];
+
+        await Promise.all(initialEntries.map(async (entry) => {
+          let newResult = await this.getProcessedEntry(entry._content_type_uid, entry.uid, entry);
+          processedEntries.push(newResult);
+        }));
+
+        console.log('processedEntries', processedEntries);
+
         this.setState({
           config: extension.config,
           referenceTo: extension.field.schema.reference_to,
-          entryList: initialEntries,
+          entryList: processedEntries,
         }, () => {
-          this.extension = extension;
           extension.window.enableAutoResizing();
           window.addEventListener("message", receiveMessage, false);
         });
@@ -50,7 +82,6 @@ export class Home extends React.Component {
           config: extension.config,
           referenceTo: extension.field.schema.reference_to
         }, () => {
-          this.extension = extension;
           extension.window.enableAutoResizing();
           window.addEventListener("message", receiveMessage, false);
         });
@@ -109,7 +140,7 @@ export class Home extends React.Component {
                   return nameEnv;
                 });
                 entry['publish_details'] = nameEnv;
-                entry['content_type'] = data.selectedRef;
+                entry['_content_type_uid'] = data.selectedRef;
               });
 
               event.source.postMessage({
@@ -135,7 +166,7 @@ export class Home extends React.Component {
                   return nameEnv;
                 });
                 entry['publish_details'] = nameEnv;
-                entry['content_type'] = data.selectedRef;
+                entry['_content_type_uid'] = data.selectedRef;
               });
 
               event.source.postMessage({
@@ -172,7 +203,7 @@ export class Home extends React.Component {
                 return nameEnv;
               });
               entry['publish_details'] = nameEnv;
-              entry['content_type'] = contentTypeUid;
+              entry['_content_type_uid'] = contentTypeUid;
             })
             resolve(result);
           })
@@ -200,7 +231,7 @@ export class Home extends React.Component {
                 return nameEnv;
               });
               entry['publish_details'] = nameEnv;
-              entry['content_type'] = contentTypeUid;
+              entry['_content_type_uid'] = contentTypeUid;
             })
             resolve(result);
           })
@@ -216,7 +247,11 @@ export class Home extends React.Component {
     let extensionData = [];
 
     entries.forEach(selected => {
-      extensionData.push(selected);
+      // extensionData.push(selected);
+      extensionData.push({
+        uid: selected.uid,
+        _content_type_uid: selected._content_type_uid
+      });
     });
 
     console.log('saveExtensionData', entries, extensionData);
@@ -286,11 +321,11 @@ export class Home extends React.Component {
                           <div className="file">
                             <div className="entry-ref">
                               <div>{entry.title}</div>
-                              <div className="content-type">{entry.content_type}</div>
+                              <div className="content-type">{entry._content_type_uid}</div>
                             </div>
                             <div className="ref-action">
                               <span className="edit-entry">
-                                <a href={`${host}#!/stack/${apiKey}/content-type/${entry.content_type}/en-us/entry/${entry.uid}/edit`} target="_blank">
+                                <a href={`${host}#!/stack/${apiKey}/content-type/${entry._content_type_uid}/en-us/entry/${entry.uid}/edit`} target="_blank">
                                   <img src="https://app.contentstack.com/static/images/edit-icon-ref1.svg" />
                                 </a>
                               </span>
