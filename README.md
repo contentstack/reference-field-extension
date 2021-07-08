@@ -19,11 +19,11 @@ We have created a step-by-step guide on how to create a Reference Field extensio
 
 To modify the extension, first clone this repo and install the dependencies in both the react apps. Then, edit the files as required, and create a build for both the apps.
 
-To install dependencies, run the following command in the <b>/reference-field<b> and <b>/reference-field-popup<b> folder
+To install dependencies, run the following command in the <b>/reference-field</b> and <b>/reference-field-popup</b> folder
 ```
 npm install
 ```
-To create new build, run the following command in the <b>/reference-field<b> and <b>/reference-field-popup<b> folder
+To create new build, run the following command in the <b>/reference-field</b> and <b>/reference-field-popup</b> folder
 
     npm run build
 
