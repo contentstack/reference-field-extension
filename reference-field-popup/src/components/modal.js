@@ -11,14 +11,16 @@ export default class Modal extends React.PureComponent {
       searchQuery: "",
       entries: [],
       initialEntries: [],
+      count: 0,
       skip: {},
       selectedRefEntries: [],
+      isLoading: true,
       searchMsg: false,
       selectedRef: undefined
     };
     this.loadMore = this.loadMore.bind(this);
     this.selectingRefEntries = this.selectingRefEntries.bind(this);
-    this.fetchQueryVideos = this.fetchQueryVideos.bind(this);
+    this.fetchQuery = this.fetchQuery.bind(this);
     this.searchQueryHandler = this.searchQueryHandler.bind(this);
   }
 
@@ -81,8 +83,14 @@ export default class Modal extends React.PureComponent {
         entries: newProps.entries.entries,
         count: newProps.entries.count,
         initialEntries: newProps.entries.entries,
-        initialCount: newProps.entries.count
+        initialCount: newProps.entries.count,
+        searchMsg: false
       })
+    }
+    else {
+      this.setState({
+        searchMsg: true
+      });
     }
 
     if (newProps.message === 'searchResult' && newProps.searchResult.count >= 0) {
@@ -164,7 +172,7 @@ export default class Modal extends React.PureComponent {
     }
   };
 
-  fetchQueryVideos = () => {
+  fetchQuery = () => {
     let { selectedRef } = this.state;
     let query = document.getElementById('search').value;
 
@@ -190,6 +198,11 @@ export default class Modal extends React.PureComponent {
     });
 
     this.setState(prevState => ({
+      entries: [],
+      initialEntries: [],
+      count: 0,
+      isLoading: false,
+      searchMsg: false,
       selectedRef: reference,
       skip: {
         ...prevState.skip,
@@ -201,15 +214,15 @@ export default class Modal extends React.PureComponent {
   }
 
   render() {
-    const { referenceTo, entries, count, selectedRefEntries, searchMsg, skip, selectedRef } = this.state;
-    console.log('this.state', this.state, 'this.props', this.props);
+    const { referenceTo, entries, count, selectedRefEntries, searchMsg, skip, selectedRef, isLoading } = this.state;
+    // console.log('this.state (!this.state.isLoading)', this.state, 'this.props', this.props);
 
     return (
       <div className="modal display-block">
         <section className="modal-main">
           {this.props.children}
           <div className="modal-header">
-            <h2>Select Entry</h2>
+            <h2>Choose Entries</h2>
           </div>
           <div className="search-bar">
             <div className="cs-pagination clearfix">
@@ -242,11 +255,11 @@ export default class Modal extends React.PureComponent {
                   onKeyPress={this.searchQueryHandler}
                 />
               </span>
-              <span className="search-icon" onClick={this.fetchQueryVideos}>
+              <span className="search-icon" onClick={this.fetchQuery}>
                 <i className="icon-search"></i>
               </span>
             </div>
-            <div className="video-section">
+            <div className="ref-section">
               {this.state.isSelected ?
                 <span className="select-count" onClick={this.showAllEntries}>
                   Show all entries({count})
@@ -266,14 +279,15 @@ export default class Modal extends React.PureComponent {
               handleSelect={this.selectingRefEntries}
               selectedRefEntries={selectedRefEntries}
               searchMsg={searchMsg}
+              isLoading={isLoading}
               totalEntries={count && count}
               skip={skip && skip}
               selectedRef={selectedRef && selectedRef}
             />
-            <div className="video-section">
-              <span className="video-count">
+            <div className="ref-section">
+              <span className="ref-count">
                 showing {entries.length} of{" "}
-                {count} videos
+                {count} entries
               </span>
             </div>
           </div>
@@ -290,7 +304,8 @@ export default class Modal extends React.PureComponent {
                 className="add-btn btn"
                 onClick={() => this.sendAndClose(true)}
               >
-                Add Selected Entries {selectedRefEntries.length}
+                <i className="icon-ok"></i>
+                Add Selected Entries ({selectedRefEntries.length})
               </button>
             </div>
           </div>

@@ -1,24 +1,25 @@
 import React from "react";
 import Loader from "./loader";
+import moment from "moment";
 import "../styles/modal.css";
 
 export default class ListLayout extends React.PureComponent {
   render() {
-    const { entries, isSelected, selectedRefEntries, handleSelect, loadContent, searchMsg, totalEntries, skip, selectedRef } = this.props;
+    const { entries, isSelected, selectedRefEntries, handleSelect, loadContent, searchMsg, totalEntries, skip, selectedRef, isLoading } = this.props;
     let renderEntries = isSelected ? selectedRefEntries : entries;
-
+  
     return (
       <ul className="list-layout">
         <li className="table-head">
           <div className="table-cell w-5"></div>
-          <div className="table-cell w-35">Name</div>
-          <div className="table-cell w-30">MODIFIED BY</div>
+          <div className="table-cell w-32">Name</div>
+          <div className="table-cell w-32">MODIFIED AT</div>
           <div className="table-cell w-30">PUBLISH DETAILS</div>
         </li>
         <div className="table-body">
           {renderEntries.length > 0 ? (
             <>
-              <ul className="video-list">
+              <ul>
                 {renderEntries?.map((entry) => {
                   const checked = selectedRefEntries.some(
                     (check) => check.uid === entry.uid
@@ -59,7 +60,10 @@ export default class ListLayout extends React.PureComponent {
                         </label>
                       </div>
                       <div className="table-cell w-35">{entry.title}</div>
-                      <div className="table-cell w-30">{entry.updated_by}</div>
+                      <div className="table-cell w-35">
+                        {moment(entry.updated_at).format(
+                          "ddd, MMM D YYYY"
+                        )}</div>
                       <div className="table-cell w-30">{
                         entry.publish_details.length > 0 ? entry.publish_details.map((env, index) => {
                           return (
@@ -88,8 +92,8 @@ export default class ListLayout extends React.PureComponent {
               </div>
             </>
           ) : (
-            searchMsg ?
-              <div className="no-item-found">No items found</div>
+            searchMsg && !isLoading ?
+              <div className="no-item-found">No entries found</div>
               :
               <Loader />
           )}

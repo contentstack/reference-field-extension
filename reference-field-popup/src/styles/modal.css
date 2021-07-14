@@ -1,4 +1,17 @@
+@font-face {
+  font-family: 'proximaNovaRegular';
+  src: url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot');
+  src:
+    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot?#iefix') format('embedded-opentype'),
+    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.woff') format('woff'),
+    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.ttf') format('truetype'),
+    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.svg#proxima_nova_rgregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .modal-main {
+  font-family: 'proximaNovaRegular', Arial, Helvetica, sans-serif;
   position: fixed;
   background: white;
   width: 100%;
@@ -122,13 +135,13 @@ input#search:hover {
   padding: 0 30px 33px;
 }
 
-.modal .video-section {
+.modal .ref-section {
   display: flex;
   font-size: 14px;
   margin: 6px 0;
 }
 
-.modal .video-section .select-count {
+.modal .ref-section .select-count {
   cursor: pointer;
   color: #25c2a3;
   position: absolute;
@@ -136,7 +149,7 @@ input#search:hover {
   font-size: 16px;
 }
 
-.modal .video-section .video-count {
+.modal .ref-section .ref-count {
   position: absolute;
   right: 30px;
   font-style: italic;
@@ -173,7 +186,6 @@ input#search:hover {
 
 .modal .modal-body .list-layout .table-body ul li span{
   top: 6px;
-  padding-top: 5px;
   position: relative;
   display: inline-block;
   min-height: 18px;
@@ -229,7 +241,8 @@ input#search:hover {
 .modal .modal-body .list-layout li .table-cell {
   text-align: left;
   padding: 8px;
-  font-size: 14px;
+  font-size: 13px;
+  word-break: break-all;
 }
 
 .modal .modal-body .list-layout li .table-cell .env {
@@ -294,6 +307,10 @@ input#search:hover {
   text-align: center;
   font-size: 16px;
   margin-top: 10px;
+}
+
+.icon-ok:before {
+  content: "\f00c";
 }
 
 .w-5 {

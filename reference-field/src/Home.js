@@ -16,6 +16,7 @@ export class Home extends React.Component {
       config: {},
       referenceTo: [],
       envList: [],
+      initialLoader: true
     };
     this.sonResponse = this.sonResponse.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
@@ -30,9 +31,10 @@ export class Home extends React.Component {
           let newResult = Object.assign({}, result.entry, entry)
           let nameEnv = [];
           newResult.publish_details.map((newEntry) => {
-            this.state.envList.environments.filter((env) => {
-              if (env.uid === newEntry.environment) nameEnv.push(env.name);
-            });
+            this.state.envList.length > 0 ?
+              this.state.envList.environments.filter((env) => {
+                if (env.uid === newEntry.environment) nameEnv.push(env.name);
+              }) : '';
             return nameEnv;
           });
 
@@ -57,8 +59,6 @@ export class Home extends React.Component {
         })
       });
 
-      console.log('initialEntries', initialEntries, extension.field.schema.reference_to);
-
       if (initialEntries !== null && initialEntries !== undefined && !this.isEmpty(initialEntries)) {
         let processedEntries = [];
 
@@ -67,12 +67,11 @@ export class Home extends React.Component {
           processedEntries.push(newResult);
         }));
 
-        console.log('processedEntries', processedEntries);
-
         this.setState({
           config: extension.config,
           referenceTo: extension.field.schema.reference_to,
           entryList: processedEntries,
+          initialLoader: false
         }, () => {
           extension.window.enableAutoResizing();
           window.addEventListener("message", receiveMessage, false);
@@ -80,7 +79,8 @@ export class Home extends React.Component {
       } else {
         this.setState({
           config: extension.config,
-          referenceTo: extension.field.schema.reference_to
+          referenceTo: extension.field.schema.reference_to,
+          initialLoader: false
         }, () => {
           extension.window.enableAutoResizing();
           window.addEventListener("message", receiveMessage, false);
@@ -247,16 +247,18 @@ export class Home extends React.Component {
     let extensionData = [];
 
     entries.forEach(selected => {
-      // extensionData.push(selected);
       extensionData.push({
         uid: selected.uid,
         _content_type_uid: selected._content_type_uid
       });
     });
 
-    console.log('saveExtensionData', entries, extensionData);
     this.extension.field.setData(extensionData);
     this.setState({ entryList: entries });
+  }
+
+  handleFocus = () => {
+    this.extension.field.setFocus();
   }
 
   removeEntry = (e) => {
@@ -294,63 +296,70 @@ export class Home extends React.Component {
   }
 
   render() {
-    const { entryList, config, apiKey } = this.state;
+    const { entryList, config, apiKey, initialLoader } = this.state;
     let host = (window.location != window.parent.location)
       ? document.referrer
       : document.location.href;
 
     return (
       <header className="App-header">
-        <div className="wrapper">
-          <div className="container">
-            <div className="reference-loading" style={{ display: "none" }}>
-              <div className="loading-flash">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
+        {initialLoader ? (
+          <div className="reference-loading">
+            <div className="loading-flash">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
-            <div className="main">
-              <div className="selected-item">
-                <div className="row selected-list">
-                  <ul className="drag1" ref={this.dragulaDecorator}>
-                    {entryList?.map((entry, index) => {
-                      return (
-                        <li id={entry.uid} key={index}>
-                          <div className="file">
-                            <div className="entry-ref">
-                              <div>{entry.title}</div>
-                              <div className="content-type">{entry._content_type_uid}</div>
-                            </div>
-                            <div className="ref-action">
-                              <span className="edit-entry">
-                                <a href={`${host}#!/stack/${apiKey}/content-type/${entry._content_type_uid}/en-us/entry/${entry.uid}/edit`} target="_blank">
-                                  <img src="https://app.contentstack.com/static/images/edit-icon-ref1.svg" />
-                                </a>
-                              </span>
-                              <span className="file-action trash" data-id={entry.uid} onClick={this.removeEntry.bind(this)}>
-                                <img src="https://app.contentstack.com/static/images/remove-entry.svg" />
-                              </span>
-                            </div>
+          </div>
+        ) : (
+          <div className="wrapper" id="wrapper" onClick={this.handleFocus}>
+            <div className="container">
+              {entryList.length > 0 ?
+                <div className="selected-reference-count">
+                  {entryList.length} entry referenced
+	            </div> : ''}
+              <div className="main">
+                <div className="selected-item">
+                  <div className="row selected-list">
+                    <ul className="drag1" ref={this.dragulaDecorator}>
+                      {entryList?.map((entry, index) => {
+                        return (
+                          <li id={entry.uid} key={index}>
+                            <div className="file">
+                              <div className="entry-ref">
+                                <div>{entry.title}</div>
+                                <div className="content-type">Content type: <span>{entry._content_type_uid}</span></div>
+                              </div>
+                              <div className="ref-action">
+                                <span className="edit-entry">
+                                  <a href={`${host}#!/stack/${apiKey}/content-type/${entry._content_type_uid}/en-us/entry/${entry.uid}/edit`} target="_blank">
+                                    <img src="https://app.contentstack.com/static/images/edit-icon-ref1.svg" />
+                                  </a>
+                                </span>
+                                <span className="file-action trash" data-id={entry.uid} onClick={this.removeEntry.bind(this)}>
+                                  <img src="https://app.contentstack.com/static/images/remove-entry.svg" />
+                                </span>
+                              </div>
 
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
+            <WindowOpener
+              url={config.redirectUrl}
+              bridge={this.sonResponse}
+              refEntries={entryList}
+            >
+              Choose Entry
+            </WindowOpener>
           </div>
-          <WindowOpener
-            url={config.redirectUrl}
-            bridge={this.sonResponse}
-            refEntries={entryList}
-          >
-            Choose Entry
-          </WindowOpener>
-        </div>
+        )}
       </header>
     );
   }
