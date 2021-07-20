@@ -101,7 +101,8 @@ export default class Modal extends React.PureComponent {
 
       if (newProps.searchResult.count === 0) {
         this.setState({
-          searchMsg: true
+          searchMsg: true,
+          isLoading: false,
         });
       }
     }
