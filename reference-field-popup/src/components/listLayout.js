@@ -7,7 +7,7 @@ export default class ListLayout extends React.PureComponent {
   render() {
     const { entries, isSelected, selectedRefEntries, handleSelect, loadContent, searchMsg, totalEntries, skip, selectedRef, isLoading } = this.props;
     let renderEntries = isSelected ? selectedRefEntries : entries;
-  
+
     return (
       <ul className="list-layout">
         <li className="table-head">
@@ -59,12 +59,18 @@ export default class ListLayout extends React.PureComponent {
                           <span className="lbl"></span>
                         </label>
                       </div>
-                      <div className="table-cell w-35">{entry.title}</div>
+                      {isSelected ?
+                        <div className="table-cell w-35">{entry.title}
+                          <div className="content-type">Content type: <span>{entry._content_type_uid}</span></div>
+                        </div>
+                        :
+                        <div className="table-cell w-35">{entry.title}</div>
+                      }
                       <div className="table-cell w-35">
                         {moment(entry.updated_at).format(
                           "ddd, MMM D YYYY"
                         )}</div>
-                      <div className="table-cell w-30">{
+                      <div className="table-cell w-32">{
                         entry.publish_details.length > 0 ? entry.publish_details.map((env, index) => {
                           return (
                             <li key={index} className="env">{env}

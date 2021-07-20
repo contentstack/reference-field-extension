@@ -50,6 +50,20 @@
   display: flex;
 }
 
+.modal .search-bar .show-selected-entries {
+  margin-bottom: 45px;
+}
+
+.modal .search-bar .show-selected-entries span {
+  position: absolute;
+  top: 108px;
+}
+
+.modal .search-bar .form-grp {
+  display: flex;
+  width: 100%;
+}
+
 .modal .search-bar .cs-pagination {
   width: 20%;
 }
@@ -149,6 +163,11 @@ input#search:hover {
   font-size: 16px;
 }
 
+.modal .ref-section .select-count i{
+  font-size: 17px;
+  margin-right: 4px;
+}
+
 .modal .ref-section .ref-count {
   position: absolute;
   right: 30px;
@@ -243,6 +262,16 @@ input#search:hover {
   padding: 8px;
   font-size: 13px;
   word-break: break-all;
+}
+
+.modal .modal-body .list-layout li .table-cell .content-type{
+  color: #aabac4;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.modal .modal-body .list-layout .table-body ul li .content-type span {
+  top: 0;
 }
 
 .modal .modal-body .list-layout li .table-cell .env {

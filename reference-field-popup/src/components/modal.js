@@ -215,7 +215,6 @@ export default class Modal extends React.PureComponent {
 
   render() {
     const { referenceTo, entries, count, selectedRefEntries, searchMsg, skip, selectedRef, isLoading } = this.state;
-    // console.log('this.state (!this.state.isLoading)', this.state, 'this.props', this.props);
 
     return (
       <div className="modal display-block">
@@ -225,45 +224,53 @@ export default class Modal extends React.PureComponent {
             <h2>Choose Entries</h2>
           </div>
           <div className="search-bar">
-            <div className="cs-pagination clearfix">
-              <div className="selected-filter" data-toggle="dropdown">
-                <span>
-                  <span className="active-filter" title="Active">{selectedRef ? selectedRef : ''}</span>
-                </span>
-                <i className="icon-chevron-down"></i>
+            {this.state.isSelected ?
+              <div className="show-selected-entries">
+                <span>{selectedRefEntries.length} entries selected</span>
               </div>
-              <div className="dropdown-menu select-controls">
-                <ul className="scroll-bar-design no-padding" id="filterList">
-                  {referenceTo?.map((reference, index) => {
-                    return (
-                      <li key={index} onClick={() => this.selectRef(reference)} id="all" className="filter selected-option" value="active">
-                        <label className="lbl dropdown-text-wrap">{reference}</label>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
+              :
+              <div className="form-grp">
+                <div className="cs-pagination clearfix">
+                  <div className="selected-filter" data-toggle="dropdown">
+                    <span>
+                      <span className="active-filter" title="Active">{selectedRef ? selectedRef : ''}</span>
+                    </span>
+                    <i className="icon-chevron-down"></i>
+                  </div>
+                  <div className="dropdown-menu select-controls">
+                    <ul className="scroll-bar-design no-padding" id="filterList">
+                      {referenceTo?.map((reference, index) => {
+                        return (
+                          <li key={index} onClick={() => this.selectRef(reference)} id="all" className="filter selected-option" value="active">
+                            <label className="lbl dropdown-text-wrap">{reference}</label>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
 
-            </div>
-            <div className="cs-form-group search-box no-margin">
-              <span className="search-input">
-                <input
-                  type="search"
-                  id="search"
-                  className="cs-text-box cs-global-search"
-                  placeholder="Search Entry"
-                  onKeyPress={this.searchQueryHandler}
-                />
-              </span>
-              <span className="search-icon" onClick={this.fetchQuery}>
-                <i className="icon-search"></i>
-              </span>
-            </div>
+                </div>
+                <div className="cs-form-group search-box no-margin">
+                  <span className="search-input">
+                    <input
+                      type="search"
+                      id="search"
+                      className="cs-text-box cs-global-search"
+                      placeholder="Search Entry"
+                      onKeyPress={this.searchQueryHandler}
+                    />
+                  </span>
+                  <span className="search-icon" onClick={this.fetchQuery}>
+                    <i className="icon-search"></i>
+                  </span>
+                </div>
+              </div>
+            }
             <div className="ref-section">
               {this.state.isSelected ?
                 <span className="select-count" onClick={this.showAllEntries}>
-                  Show all entries({count})
-              </span>
+                  <i className="icon icon-angle-left"></i>Back to entries list
+                </span>
                 :
                 <span className="select-count" onClick={this.showselectedEntries}>
                   Show selected entries({selectedRefEntries.length})
@@ -285,10 +292,12 @@ export default class Modal extends React.PureComponent {
               selectedRef={selectedRef && selectedRef}
             />
             <div className="ref-section">
-              <span className="ref-count">
-                showing {entries.length} of{" "}
-                {count} entries
-              </span>
+              {this.state.isSelected ? ''
+                :
+                <span className="ref-count">
+                  showing {entries.length} of{" "}
+                  {count} entries
+              </span>}
             </div>
           </div>
 
