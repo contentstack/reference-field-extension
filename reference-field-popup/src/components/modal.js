@@ -84,12 +84,16 @@ export default class Modal extends React.PureComponent {
         count: newProps.entries.count,
         initialEntries: newProps.entries.entries,
         initialCount: newProps.entries.count,
-        searchMsg: false
+        searchMsg: false,
+        isLoading: false
       })
     }
     else {
+      setTimeout(() => {
+        this.setState({ searchMsg: true });
+      }, 1000)
       this.setState({
-        searchMsg: true
+        isLoading: false
       });
     }
 
@@ -102,7 +106,7 @@ export default class Modal extends React.PureComponent {
       if (newProps.searchResult.count === 0) {
         this.setState({
           searchMsg: true,
-          isLoading: false,
+          isLoading: false
         });
       }
     }
@@ -202,8 +206,8 @@ export default class Modal extends React.PureComponent {
       entries: [],
       initialEntries: [],
       count: 0,
-      isLoading: false,
-      searchMsg: false,
+      isLoading: true,
+      searchMsg: true,
       selectedRef: reference,
       skip: {
         ...prevState.skip,
