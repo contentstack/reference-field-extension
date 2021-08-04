@@ -37,4 +37,4 @@ jobs:
         with:
           default_author: github_actor
           message: "Automated build"
-          add: '["reference-field/build/*", "reference-field-popup/build/*"] --force'
+          add: "reference-field/build/* reference-field-popup/build/* --force"
