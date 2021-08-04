@@ -5,7 +5,6 @@ import { WindowOpener } from "./components/windowOpener";
 import ContentstackUIExtension from "@contentstack/ui-extensions-sdk";
 import "./styles/style.css";
 
-
 export class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -16,7 +15,7 @@ export class Home extends React.Component {
       config: {},
       referenceTo: [],
       envList: [],
-      initialLoader: true
+      initialLoader: true,
     };
     this.sonResponse = this.sonResponse.bind(this);
     this.isEmpty = this.isEmpty.bind(this);
@@ -24,74 +23,96 @@ export class Home extends React.Component {
 
   getProcessedEntry(ctUid, uid, entry) {
     return new Promise((resolve) => {
-      this.extension.stack.ContentType(ctUid).Entry(uid)
-        .addParam('include_publish_details', 'true')
+      this.extension.stack
+        .ContentType(ctUid)
+        .Entry(uid)
+        .addParam("include_publish_details", "true")
         .fetch()
-        .then(async result => {
-          let newResult = Object.assign({}, result.entry, entry)
+        .then(async (result) => {
+          let newResult = Object.assign({}, result.entry, entry);
           let nameEnv = [];
           newResult.publish_details.map((newEntry) => {
-            this.state.envList.length > 0 ?
+            if (this.state.envList.length > 0) {
               this.state.envList.environments.filter((env) => {
                 if (env.uid === newEntry.environment) nameEnv.push(env.name);
-              }) : '';
+              });
+            }
+
             return nameEnv;
           });
 
-          newResult['publish_details'] = nameEnv;
+          newResult["publish_details"] = nameEnv;
           resolve(newResult);
-        }).catch(err => {
-          console.log(err);
         })
-    })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
   }
 
   componentDidMount() {
     ContentstackUIExtension.init().then(async (extension) => {
       let initialEntries = extension.field.getData();
+      let mergedConfig = Object.assign(extension.config, extension.fieldConfig);
       this.extension = extension;
       extension.window.enableAutoResizing();
 
-      extension.stack.getEnvironments('get').then((result) => {
+      extension.stack.getEnvironments("get").then((result) => {
         this.setState({
           envList: result,
-          apiKey: extension.stack.getData().api_key
-        })
+          apiKey: extension.stack.getData().api_key,
+        });
       });
 
-      if (initialEntries !== null && initialEntries !== undefined && !this.isEmpty(initialEntries)) {
+      if (
+        initialEntries !== null &&
+        initialEntries !== undefined &&
+        !this.isEmpty(initialEntries)
+      ) {
         let processedEntries = [];
 
-        await Promise.all(initialEntries.map(async (entry) => {
-          let newResult = await this.getProcessedEntry(entry._content_type_uid, entry.uid, entry);
-          processedEntries.push(newResult);
-        }));
+        await Promise.all(
+          initialEntries.map(async (entry) => {
+            let newResult = await this.getProcessedEntry(
+              entry._content_type_uid,
+              entry.uid,
+              entry
+            );
+            processedEntries.push(newResult);
+          })
+        );
 
-        this.setState({
-          config: extension.config,
-          referenceTo: extension.field.schema.reference_to,
-          entryList: processedEntries,
-          initialLoader: false
-        }, () => {
-          extension.window.enableAutoResizing();
-          window.addEventListener("message", receiveMessage, false);
-        });
+        this.setState(
+          {
+            config: mergedConfig,
+            referenceTo: extension.field.schema.reference_to,
+            entryList: processedEntries,
+            initialLoader: false,
+          },
+          () => {
+            extension.window.enableAutoResizing();
+            window.addEventListener("message", receiveMessage, false);
+          }
+        );
       } else {
-        this.setState({
-          config: extension.config,
-          referenceTo: extension.field.schema.reference_to,
-          initialLoader: false
-        }, () => {
-          extension.window.enableAutoResizing();
-          window.addEventListener("message", receiveMessage, false);
-        });
+        this.setState(
+          {
+            config: mergedConfig,
+            referenceTo: extension.field.schema.reference_to,
+            initialLoader: false,
+          },
+          () => {
+            extension.window.enableAutoResizing();
+            window.addEventListener("message", receiveMessage, false);
+          }
+        );
       }
     });
 
     const receiveMessage = (event) => {
       const { data } = event;
       const { config, entryList, referenceTo, envList } = this.state;
-      let query = config.query && JSON.parse((config.query).replace(/\'/g, '\"'))
+      let query = config.query && JSON.parse(config.query.replace(/\'/g, '"'));
 
       if (data.getConfig) {
         event.source.postMessage(
@@ -105,75 +126,90 @@ export class Home extends React.Component {
         );
       } else if (data.selectedRefEntries) {
         this.saveExtensionData(data.selectedRefEntries);
-      }
-      else if (data.message === 'add') {
+      } else if (data.message === "add") {
         this.getEntries(data.selectedRef, data.skip).then((result) => {
-          event.source.postMessage({
-            message: "Sending entries",
-            entries: result
-          }, event.origin);
+          event.source.postMessage(
+            {
+              message: "Sending entries",
+              entries: result,
+            },
+            event.origin
+          );
         });
-      } else if (data.message === 'loadmore') {
+      } else if (data.message === "loadmore") {
         this.getEntries(data.selectedRef, data.skip).then((result) => {
-          event.source.postMessage({
-            message: "loadmoreResult",
-            loadmoreResult: result
-          }, event.origin);
+          event.source.postMessage(
+            {
+              message: "loadmoreResult",
+              loadmoreResult: result,
+            },
+            event.origin
+          );
         });
-      } else if (data.message === 'search') {
+      } else if (data.message === "search") {
         if (config.query) {
-          this.extension.stack.ContentType(data.selectedRef).Entry
-            .Query()
+          this.extension.stack
+            .ContentType(data.selectedRef)
+            .Entry.Query()
             .query(query)
-            .addParam('include_publish_details', 'true')
-            .addParam('include_count', 'true')
+            .addParam("include_publish_details", "true")
+            .addParam("include_count", "true")
             .limit(10)
-            .regex('title', '^' + data.query, 'i')
+            .regex("title", "^" + data.query, "i")
             .find()
-            .then(result => {
+            .then((result) => {
               result.entries.map((entry) => {
                 let nameEnv = [];
                 entry.publish_details.map((newEntry) => {
                   envList.environments.filter((env) => {
-                    if (env.uid === newEntry.environment) nameEnv.push(env.name);
+                    if (env.uid === newEntry.environment)
+                      nameEnv.push(env.name);
                   });
                   return nameEnv;
                 });
-                entry['publish_details'] = nameEnv;
-                entry['_content_type_uid'] = data.selectedRef;
+                entry["publish_details"] = nameEnv;
+                entry["_content_type_uid"] = data.selectedRef;
               });
 
-              event.source.postMessage({
-                message: "searchResult",
-                searchResult: result
-              }, event.origin)
-            })
+              event.source.postMessage(
+                {
+                  message: "searchResult",
+                  searchResult: result,
+                },
+                event.origin
+              );
+            });
         } else {
-          this.extension.stack.ContentType(data.selectedRef).Entry
-            .Query()
-            .addParam('include_publish_details', 'true')
-            .addParam('include_count', 'true')
+          this.extension.stack
+            .ContentType(data.selectedRef)
+            .Entry.Query()
+            .addParam("include_publish_details", "true")
+            .addParam("include_count", "true")
             .limit(10)
-            .regex('title', '^' + data.query, 'i')
+            .regex("title", "^" + data.query, "i")
             .find()
-            .then(result => {
+            .then((result) => {
               result.entries.map((entry) => {
                 let nameEnv = [];
                 entry.publish_details.map((newEntry) => {
                   envList.environments.filter((env) => {
-                    if (env.uid === newEntry.environment) nameEnv.push(env.name);
+                    if (env.uid === newEntry.environment)
+                      nameEnv.push(env.name);
                   });
                   return nameEnv;
                 });
-                entry['publish_details'] = nameEnv;
-                entry['_content_type_uid'] = data.selectedRef;
+                entry["publish_details"] = nameEnv;
+                entry["_content_type_uid"] = data.selectedRef;
               });
 
-              event.source.postMessage({
-                message: "searchResult",
-                searchResult: result
-              }, event.origin)
-            })
+              event.source.postMessage(
+                {
+                  message: "searchResult",
+                  searchResult: result,
+                },
+                event.origin
+              );
+            });
         }
       }
     };
@@ -181,19 +217,20 @@ export class Home extends React.Component {
 
   getEntries(contentTypeUid, skip) {
     let { config, envList } = this.state;
-    let query = config.query && JSON.parse((config.query).replace(/\'/g, '\"'));
+    let query = config.query && JSON.parse(config.query.replace(/\'/g, '"'));
 
     if (config.query) {
       return new Promise(async (resolve, reject) => {
-        this.extension.stack.ContentType(contentTypeUid).Entry
-          .Query()
+        this.extension.stack
+          .ContentType(contentTypeUid)
+          .Entry.Query()
           .query(query)
-          .addParam('include_publish_details', 'true')
-          .addParam('include_count', 'true')
+          .addParam("include_publish_details", "true")
+          .addParam("include_count", "true")
           .limit(10)
           .skip(skip[contentTypeUid])
           .find()
-          .then(result => {
+          .then((result) => {
             result.entries.map((entry) => {
               let nameEnv = [];
               entry.publish_details.map((newEntry) => {
@@ -202,26 +239,27 @@ export class Home extends React.Component {
                 });
                 return nameEnv;
               });
-              entry['publish_details'] = nameEnv;
-              entry['_content_type_uid'] = contentTypeUid;
-            })
+              entry["publish_details"] = nameEnv;
+              entry["_content_type_uid"] = contentTypeUid;
+            });
             resolve(result);
           })
           .catch((err) => {
             console.log(err);
             reject(err);
           });
-      })
+      });
     } else {
       return new Promise(async (resolve, reject) => {
-        this.extension.stack.ContentType(contentTypeUid).Entry
-          .Query()
-          .addParam('include_publish_details', 'true')
-          .addParam('include_count', 'true')
+        this.extension.stack
+          .ContentType(contentTypeUid)
+          .Entry.Query()
+          .addParam("include_publish_details", "true")
+          .addParam("include_count", "true")
           .limit(10)
           .skip(skip[contentTypeUid])
           .find()
-          .then(result => {
+          .then((result) => {
             result.entries.map((entry) => {
               let nameEnv = [];
               entry.publish_details.map((newEntry) => {
@@ -230,26 +268,26 @@ export class Home extends React.Component {
                 });
                 return nameEnv;
               });
-              entry['publish_details'] = nameEnv;
-              entry['_content_type_uid'] = contentTypeUid;
-            })
+              entry["publish_details"] = nameEnv;
+              entry["_content_type_uid"] = contentTypeUid;
+            });
             resolve(result);
           })
           .catch((err) => {
             console.log(err);
             reject(err);
           });
-      })
+      });
     }
   }
 
   saveExtensionData(entries) {
     let extensionData = [];
 
-    entries.forEach(selected => {
+    entries.forEach((selected) => {
       extensionData.push({
         uid: selected.uid,
-        _content_type_uid: selected._content_type_uid
+        _content_type_uid: selected._content_type_uid,
       });
     });
 
@@ -259,7 +297,7 @@ export class Home extends React.Component {
 
   handleFocus = () => {
     this.extension.field.setFocus();
-  }
+  };
 
   removeEntry = (e) => {
     let id = e.currentTarget.dataset.id;
@@ -271,7 +309,7 @@ export class Home extends React.Component {
     );
 
     this.saveExtensionData(entryList);
-  }
+  };
 
   sonResponse(err, res) {
     if (err) {
@@ -297,9 +335,10 @@ export class Home extends React.Component {
 
   render() {
     const { entryList, config, apiKey, initialLoader } = this.state;
-    let host = (window.location != window.parent.location)
-      ? document.referrer
-      : document.location.href;
+    let host =
+      window.location != window.parent.location
+        ? document.referrer
+        : document.location.href;
 
     return (
       <header className="App-header">
@@ -315,10 +354,13 @@ export class Home extends React.Component {
         ) : (
           <div className="wrapper" id="wrapper" onClick={this.handleFocus}>
             <div className="container">
-              {entryList.length > 0 ?
+              {entryList.length > 0 ? (
                 <div className="selected-reference-count">
                   {entryList.length} entry referenced
-	            </div> : ''}
+                </div>
+              ) : (
+                ""
+              )}
               <div className="main">
                 <div className="selected-item">
                   <div className="row selected-list">
@@ -329,19 +371,28 @@ export class Home extends React.Component {
                             <div className="file">
                               <div className="entry-ref">
                                 <div>{entry.title}</div>
-                                <div className="content-type">Content type: <span>{entry._content_type_uid}</span></div>
+                                <div className="content-type">
+                                  Content type:{" "}
+                                  <span>{entry._content_type_uid}</span>
+                                </div>
                               </div>
                               <div className="ref-action">
                                 <span className="edit-entry">
-                                  <a href={`${host}#!/stack/${apiKey}/content-type/${entry._content_type_uid}/en-us/entry/${entry.uid}/edit`} target="_blank">
+                                  <a
+                                    href={`${host}#!/stack/${apiKey}/content-type/${entry._content_type_uid}/en-us/entry/${entry.uid}/edit`}
+                                    target="_blank"
+                                  >
                                     <img src="https://app.contentstack.com/static/images/edit-icon-ref1.svg" />
                                   </a>
                                 </span>
-                                <span className="file-action trash" data-id={entry.uid} onClick={this.removeEntry.bind(this)}>
+                                <span
+                                  className="file-action trash"
+                                  data-id={entry.uid}
+                                  onClick={this.removeEntry.bind(this)}
+                                >
                                   <img src="https://app.contentstack.com/static/images/remove-entry.svg" />
                                 </span>
                               </div>
-
                             </div>
                           </li>
                         );

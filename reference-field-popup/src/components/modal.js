@@ -16,7 +16,7 @@ export default class Modal extends React.PureComponent {
       selectedRefEntries: [],
       isLoading: true,
       searchMsg: false,
-      selectedRef: undefined
+      selectedRef: undefined,
     };
     this.loadMore = this.loadMore.bind(this);
     this.selectingRefEntries = this.selectingRefEntries.bind(this);
@@ -37,7 +37,7 @@ export default class Modal extends React.PureComponent {
         1
       );
       this.setState({
-        selectedRefEntries: [...selectedRefEntries]
+        selectedRefEntries: [...selectedRefEntries],
       });
     } else {
       const newlist = [...selectedRefEntries];
@@ -56,17 +56,20 @@ export default class Modal extends React.PureComponent {
 
     this.setState({
       referenceTo: referenceTo,
-      selectedRef: referenceTo[0]
+      selectedRef: referenceTo[0],
     });
 
-    window.opener.postMessage({ message: 'add', skip: skip, selectedRef: referenceTo[0] }, '*');
+    window.opener.postMessage(
+      { message: "add", skip: skip, selectedRef: referenceTo[0] },
+      "*"
+    );
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       skip: {
         ...prevState.skip,
-        [referenceTo[0]]: skip[referenceTo[0]] + 10
-      }
-    }))
+        [referenceTo[0]]: skip[referenceTo[0]] + 10,
+      },
+    }));
   }
 
   UNSAFE_componentWillReceiveProps(newProps) {
@@ -85,39 +88,44 @@ export default class Modal extends React.PureComponent {
         initialEntries: newProps.entries.entries,
         initialCount: newProps.entries.count,
         searchMsg: false,
-        isLoading: false
-      })
-    }
-    else {
+        isLoading: false,
+      });
+    } else {
       setTimeout(() => {
         this.setState({ searchMsg: true });
-      }, 1000)
+      }, 1000);
       this.setState({
-        isLoading: false
+        isLoading: false,
       });
     }
 
-    if (newProps.message === 'searchResult' && newProps.searchResult.count >= 0) {
+    if (
+      newProps.message === "searchResult" &&
+      newProps.searchResult.count >= 0
+    ) {
       this.setState({
         entries: newProps.searchResult.entries,
-        count: newProps.searchResult.count
-      })
+        count: newProps.searchResult.count,
+      });
 
       if (newProps.searchResult.count === 0) {
         this.setState({
           searchMsg: true,
-          isLoading: false
+          isLoading: false,
         });
       }
     }
 
-    if (newProps.message === 'loadmoreResult' && newProps.loadmoreResult.count > 0) {
+    if (
+      newProps.message === "loadmoreResult" &&
+      newProps.loadmoreResult.count > 0
+    ) {
       this.setState({
-        entries: this.state.entries.concat(newProps.loadmoreResult.entries)
-      })
+        entries: this.state.entries.concat(newProps.loadmoreResult.entries),
+      });
 
       if (this.state.skip[this.state.selectedRef] > this.state.count) {
-        document.getElementById('loadMore').style.display = 'none'
+        document.getElementById("loadMore").style.display = "none";
       }
     }
   }
@@ -126,14 +134,17 @@ export default class Modal extends React.PureComponent {
     let { skip, count, selectedRef } = this.state;
 
     if (skip[selectedRef] <= count) {
-      window.opener.postMessage({ message: 'loadmore', skip: skip, selectedRef: selectedRef }, '*');
+      window.opener.postMessage(
+        { message: "loadmore", skip: skip, selectedRef: selectedRef },
+        "*"
+      );
 
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         skip: {
           ...prevState.skip,
-          [selectedRef]: skip[selectedRef] + 10
-        }
-      }))
+          [selectedRef]: skip[selectedRef] + 10,
+        },
+      }));
     }
   };
 
@@ -148,13 +159,13 @@ export default class Modal extends React.PureComponent {
     this.setState((prevState) => ({
       isSelected: !prevState.isSelected,
     }));
-  }
+  };
 
   showselectedEntries = () => {
     this.setState((prevState) => ({
-      isSelected: !prevState.isSelected
+      isSelected: !prevState.isSelected,
     }));
-  }
+  };
 
   searchQueryHandler = (event) => {
     let { selectedRef } = this.state;
@@ -162,47 +173,53 @@ export default class Modal extends React.PureComponent {
     this.setState({ searchQuery: query });
 
     if (event.charCode === 13) {
-      if (query !== '') {
-        window.opener.postMessage({ message: 'search', query: query, selectedRef: selectedRef }, '*');
+      if (query !== "") {
+        window.opener.postMessage(
+          { message: "search", query: query, selectedRef: selectedRef },
+          "*"
+        );
       } else {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           entries: prevState.initialEntries,
           count: prevState.initialCount,
           skip: {
             ...prevState.skip,
-            [selectedRef]: 10
-          }
-        }))
+            [selectedRef]: 10,
+          },
+        }));
       }
     }
   };
 
   fetchQuery = () => {
     let { selectedRef } = this.state;
-    let query = document.getElementById('search').value;
+    let query = document.getElementById("search").value;
 
-    if (query !== '') {
-      window.opener.postMessage({ message: 'search', query: query, selectedRef: selectedRef }, '*');
+    if (query !== "") {
+      window.opener.postMessage(
+        { message: "search", query: query, selectedRef: selectedRef },
+        "*"
+      );
     } else {
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         entries: this.state.initialEntries,
         count: this.state.initialCount,
         skip: {
           ...prevState.skip,
-          [selectedRef]: 10
-        }
-      }))
+          [selectedRef]: 10,
+        },
+      }));
     }
   };
 
   selectRef = (reference) => {
     let { skip } = this.state;
 
-    this.props.referenceTo.forEach((reference) => {
-      skip[reference] = 0;
+    this.props.referenceTo.forEach((referenceTo) => {
+      skip[referenceTo] = 0;
     });
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       entries: [],
       initialEntries: [],
       count: 0,
@@ -211,15 +228,27 @@ export default class Modal extends React.PureComponent {
       selectedRef: reference,
       skip: {
         ...prevState.skip,
-        [reference]: skip[reference] + 10
-      }
-    }))
+        [reference]: skip[reference] + 10,
+      },
+    }));
 
-    window.opener.postMessage({ message: 'add', skip: skip, selectedRef: reference }, '*');
-  }
+    window.opener.postMessage(
+      { message: "add", skip: skip, selectedRef: reference },
+      "*"
+    );
+  };
 
   render() {
-    const { referenceTo, entries, count, selectedRefEntries, searchMsg, skip, selectedRef, isLoading } = this.state;
+    const {
+      referenceTo,
+      entries,
+      count,
+      selectedRefEntries,
+      searchMsg,
+      skip,
+      selectedRef,
+      isLoading,
+    } = this.state;
 
     return (
       <div className="modal display-block">
@@ -229,31 +258,43 @@ export default class Modal extends React.PureComponent {
             <h2>Choose Entries</h2>
           </div>
           <div className="search-bar">
-            {this.state.isSelected ?
+            {this.state.isSelected ? (
               <div className="show-selected-entries">
                 <span>{selectedRefEntries.length} entries selected</span>
               </div>
-              :
+            ) : (
               <div className="form-grp">
                 <div className="cs-pagination clearfix">
                   <div className="selected-filter" data-toggle="dropdown">
                     <span>
-                      <span className="active-filter" title="Active">{selectedRef ? selectedRef : ''}</span>
+                      <span className="active-filter" title="Active">
+                        {selectedRef ? selectedRef : ""}
+                      </span>
                     </span>
                     <i className="icon-chevron-down"></i>
                   </div>
                   <div className="dropdown-menu select-controls">
-                    <ul className="scroll-bar-design no-padding" id="filterList">
+                    <ul
+                      className="scroll-bar-design no-padding"
+                      id="filterList"
+                    >
                       {referenceTo?.map((reference, index) => {
                         return (
-                          <li key={index} onClick={() => this.selectRef(reference)} id="all" className="filter selected-option" value="active">
-                            <label className="lbl dropdown-text-wrap">{reference}</label>
+                          <li
+                            key={index}
+                            onClick={() => this.selectRef(reference)}
+                            id="all"
+                            className="filter selected-option"
+                            value="active"
+                          >
+                            <label className="lbl dropdown-text-wrap">
+                              {reference}
+                            </label>
                           </li>
-                        )
+                        );
                       })}
                     </ul>
                   </div>
-
                 </div>
                 <div className="cs-form-group search-box no-margin">
                   <span className="search-input">
@@ -270,39 +311,43 @@ export default class Modal extends React.PureComponent {
                   </span>
                 </div>
               </div>
-            }
+            )}
             <div className="ref-section">
-              {this.state.isSelected ?
+              {this.state.isSelected ? (
                 <span className="select-count" onClick={this.showAllEntries}>
                   <i className="icon icon-angle-left"></i>Back to entries list
                 </span>
-                :
-                <span className="select-count" onClick={this.showselectedEntries}>
+              ) : (
+                <span
+                  className="select-count"
+                  onClick={this.showselectedEntries}
+                >
                   Show selected entries({selectedRefEntries.length})
-              </span>
-              }
+                </span>
+              )}
             </div>
           </div>
           <div className="modal-body">
             <ListLayout
-              entries={entries && entries}
+              entries={entries}
               isSelected={this.state.isSelected}
               loadContent={this.loadMore}
               handleSelect={this.selectingRefEntries}
               selectedRefEntries={selectedRefEntries}
               searchMsg={searchMsg}
               isLoading={isLoading}
-              totalEntries={count && count}
-              skip={skip && skip}
-              selectedRef={selectedRef && selectedRef}
+              totalEntries={count}
+              skip={skip}
+              selectedRef={selectedRef}
             />
             <div className="ref-section">
-              {this.state.isSelected ? ''
-                :
+              {this.state.isSelected ? (
+                ""
+              ) : (
                 <span className="ref-count">
-                  showing {entries.length} of{" "}
-                  {count} entries
-              </span>}
+                  showing {entries.length} of {count} entries
+                </span>
+              )}
             </div>
           </div>
 
