@@ -18,10 +18,20 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./reference-field
+        
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./reference-field-popup
 
       - name: Create build
         run: npm run build
-
+        working-directory: ./reference-field
+        
+      - name: Create build
+        run: npm run build
+        working-directory: ./reference-field-popup
+        
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
