@@ -1,7 +1,7 @@
 name: Build Workflow
 on:
-   push:
-    branches: [ staging, feat/CS-14340_reference_field_new_implementation ]
+  push:
+    branches: [staging, feat/CS-14340_reference_field_new_implementation]
 
 jobs:
   run:
@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install
         working-directory: ./reference-field
-        
+
       - name: Install dependencies
         run: npm install
         working-directory: ./reference-field-popup
@@ -27,14 +27,14 @@ jobs:
       - name: Create build
         run: npm run build
         working-directory: ./reference-field
-        
+
       - name: Create build
         run: npm run build
         working-directory: ./reference-field-popup
-        
+
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
           default_author: github_actor
-          message: 'Automated build'
-          add: './build --force'
+          message: "Automated build"
+          add: '["reference-field/build/*", "reference-field-popup/build/*"] --force'
