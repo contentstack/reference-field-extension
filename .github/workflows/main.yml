@@ -1,7 +1,7 @@
-name: CI
+name: Build Workflow
 on:
    push:
-    branches: [ feat/CS-14340_reference_field_new_implementation ]
+    branches: [ staging, feat/CS-14340_reference_field_new_implementation ]
 
 jobs:
   run:
@@ -35,7 +35,6 @@ jobs:
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
-          author_name: Shrutika Almeida
-          author_email: shrutika.almeida@contentstack.com
-          message: 'generate new build'
-          add: '.'
+          default_author: github_actor
+          message: 'Automated build'
+          add: './build --force'
