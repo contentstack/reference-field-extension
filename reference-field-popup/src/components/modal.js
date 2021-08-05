@@ -267,7 +267,7 @@ export default class Modal extends React.PureComponent {
                 <div className="cs-pagination clearfix">
                   <div className="selected-filter" data-toggle="dropdown">
                     <span>
-                      <span className="active-filter" title="Active">
+                      <span className="active-filter" title={selectedRef}>
                         {selectedRef ? selectedRef : ""}
                       </span>
                     </span>
@@ -287,7 +287,10 @@ export default class Modal extends React.PureComponent {
                             className="filter selected-option"
                             value="active"
                           >
-                            <label className="lbl dropdown-text-wrap">
+                            <label
+                              title={reference}
+                              className="lbl dropdown-text-wrap"
+                            >
                               {reference}
                             </label>
                           </li>

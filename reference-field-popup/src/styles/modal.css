@@ -77,6 +77,15 @@
   padding: 7px 10px 4px 10px;
   text-transform: capitalize;
   cursor: pointer;
+  min-width: 148px;
+}
+
+.modal .search-bar .selected-filter span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  width: 80%;
 }
 
 .modal .search-bar .selected-filter i {
@@ -98,6 +107,10 @@
 
 .modal .search-bar .filter label {
   cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
 }
 
 .dropdown-menu {
