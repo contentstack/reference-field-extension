@@ -1,8 +1,7 @@
 name: Build Workflow
 on:
   push:
-    branches:
-      [master, staging, feat/CS-14340_reference_field_new_implementation]
+    branches: [staging, feat/CS-14340_reference_field_new_implementation]
 
 jobs:
   run:
@@ -39,5 +38,3 @@ jobs:
           default_author: github_actor
           message: "Automated build"
           add: "reference-field/build/* reference-field-popup/build/* --force"
-          branch: master
-          tag: "v1.0.0 --force"
