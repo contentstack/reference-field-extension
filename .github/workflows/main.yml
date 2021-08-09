@@ -38,3 +38,4 @@ jobs:
           default_author: github_actor
           message: "Automated build"
           add: "reference-field/build/* reference-field-popup/build/* --force"
+          tag: "v1.0.0 --force"
