@@ -1,7 +1,8 @@
 name: Build Workflow
 on:
   push:
-    branches: [staging, feat/CS-14340_reference_field_new_implementation]
+    branches:
+      [master, staging, feat/CS-14340_reference_field_new_implementation]
 
 jobs:
   run:
