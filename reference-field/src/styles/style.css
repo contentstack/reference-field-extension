@@ -1,43 +1,141 @@
 @font-face {
-  font-family: 'proximaNovaRegular';
-  src: url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot');
-  src:
-    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot?#iefix') format('embedded-opentype'),
-    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.woff') format('woff'),
-    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.ttf') format('truetype'),
-    url('https://litmus.com/fonts/Emails/proximanova-regular-webfont.svg#proxima_nova_rgregular') format('svg');
+  font-family: "proximaNovaRegular";
+  src: url("https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot");
+  src: url("https://litmus.com/fonts/Emails/proximanova-regular-webfont.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://litmus.com/fonts/Emails/proximanova-regular-webfont.woff")
+      format("woff"),
+    url("https://litmus.com/fonts/Emails/proximanova-regular-webfont.ttf")
+      format("truetype"),
+    url("https://litmus.com/fonts/Emails/proximanova-regular-webfont.svg#proxima_nova_rgregular")
+      format("svg");
   font-weight: normal;
   font-style: normal;
 }
 
 /* CSS RESET */
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
   margin: 0;
   padding: 0;
   border: 0;
   font-size: 100%;
   font-weight: 500;
-  font-family: 'proximaNovaRegular', Arial, Helvetica, sans-serif;
+  font-family: "proximaNovaRegular", Arial, Helvetica, sans-serif;
   vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
 
-article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
   display: block;
 }
 
-ol, ul {
+ol,
+ul {
   list-style: none;
 }
 
-blockquote, q {
+blockquote,
+q {
   quotes: none;
 }
 
-blockquote::before, blockquote::after, q::before, q::after {
-  content: '';
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: "";
   content: none;
 }
 
@@ -133,10 +231,9 @@ body {
 
 .selected-list .ref-action span {
   height: 58px;
-  padding-top: 20px;
   text-align: center;
   background: 0 0;
-  border-left: 1px solid #E6ECEE;
+  border-left: 1px solid #e6ecee;
   padding: 18px 10px 10px 12px;
   cursor: pointer;
   position: relative;
@@ -184,8 +281,8 @@ body {
 
 .gu-mirror {
   list-style: none;
-  position: fixed!important;
-  z-index: 9999!important;
+  position: fixed !important;
+  z-index: 9999 !important;
   opacity: 0.9;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
   filter: alpha(opacity=80);
@@ -237,10 +334,9 @@ body {
 
 .gu-mirror .ref-action span {
   height: 58px;
-  padding-top: 20px;
   text-align: center;
   background: 0 0;
-  border-left: 1px solid #E6ECEE;
+  border-left: 1px solid #e6ecee;
   padding: 18px 10px 10px 12px;
   cursor: pointer;
   position: relative;
@@ -249,19 +345,19 @@ body {
 }
 
 .gu-hide {
-  display: none!important
+  display: none !important;
 }
 
 .gu-unselectable {
-  -webkit-user-select: none!important;
-  -moz-user-select: none!important;
-  -ms-user-select: none!important;
-  user-select: none!important
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
 
 .gu-transit {
   border: 2px dashed #063a52;
-  background: #F0F9FF;
+  background: #f0f9ff;
   opacity: 0.2;
   margin-left: 5px;
 }
